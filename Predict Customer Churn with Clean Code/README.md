@@ -10,12 +10,12 @@ Logistic Regression and Random Forest are used to train the model. There two mai
 
 ## Running Files
 
-Both the files can be run individually using 
+Both the files can be run individually using below commands
 
-'''
+```
 python churn_library.py
 python churn_script_logging_and_testing.py
-'''
+```
 
 
 
