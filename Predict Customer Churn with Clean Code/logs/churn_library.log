@@ -1,0 +1,8 @@
+root - INFO - Fixture import_data: SUCCESS
+root - INFO - Testing import_data: SUCCESS
+root - INFO - Testing perform_eda: Images folder exists
+root - INFO - Testing perform_eda: SUCCESS
+root - INFO - Fixture encoder_helper: SUCCESS
+root - INFO - Testing encoder_helper: SUCCESS
+root - INFO - Fixture perform_feature_engineering: SUCCESS
+root - INFO - Testing perform_feature_engineering: SUCCESS
