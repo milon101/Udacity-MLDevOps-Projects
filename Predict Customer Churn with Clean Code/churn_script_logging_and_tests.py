@@ -1,13 +1,13 @@
 '''
-created by Imdadul Haque
-Date: 06/12/2022
+This file contains unit tests to check different functions in
+churn_library.py
 '''
 
 import os
 import logging
+import glob
 import pytest
 import churn_library as cls
-
 
 logging.basicConfig(
     filename='./logs/churn_library.log',
@@ -155,6 +155,18 @@ def test_perform_feature_engineering(perform_feature_engineering_f):
     x_train, x_test, y_train, y_test, keep_cols = perform_feature_engineering_f
 
     try:
+        assert x_train.shape[0] > 0
+        assert x_train.shape[1] > 0
+        assert x_test.shape[0] > 0
+        assert x_test.shape[1] > 0
+        # logging.info("Testing perform_feature_engineering: SUCCESS")
+    except AssertionError as err:
+        logging.error(
+            "Testing perform_feature_engineering: Train test split data don't"
+            "appear to have rows and columns")
+        raise err
+
+    try:
         for col in keep_cols:
             assert col in x_train.columns
     except AssertionError as err:
@@ -187,6 +199,14 @@ def test_train_models(perform_feature_engineering_f):
     cls.train_models(x_train, x_test, y_train, y_test)
 
     try:
+        assert os.path.isfile('./images/roc_curve.png')
+        logging.info("Testing train_models: Roc curve exists")
+    except AssertionError as err:
+        logging.error(
+            "Testing train_models: Roc curve was not found")
+        raise err
+
+    try:
         assert os.path.isfile('./models/rfc_model.pkl')
         logging.info("Testing train_models: Random Forest model exists")
     except AssertionError as err:
@@ -194,7 +214,7 @@ def test_train_models(perform_feature_engineering_f):
         raise err
 
     try:
-        assert os.path.isfile('./models/lr_model.pkl')
+        assert os.path.isfile('./models/logistic_model.pkl')
         logging.info("Testing train_models: Logistic Regression model exists")
     except AssertionError as err:
         logging.error(
@@ -202,9 +222,10 @@ def test_train_models(perform_feature_engineering_f):
         raise err
 
 
-# if __name__ == "__main__":
-    # test_import(cls.import_data)
-    # test_eda(cls.perform_eda)
-    # test_encoder_helper(cls.encoder_helper)
-    # test_perform_feature_engineering(cls.perform_feature_engineering)
-    # test_train_models(cls.train_models)
+if __name__ == "__main__":
+
+    for directory in ['./images', './logs', './models']:
+        files = glob.glob("%s/*" %directory)
+        for f in files:
+            os.remove(f)
+    pytest.main(['./churn_script_logging_and_tests.py', '-v', '-x'])
