@@ -1,7 +1,10 @@
 # library doc string
 '''
-This file imports the data to train machine learning model find the 
-customers that are likely to churn. Logistic regression and Random forest methods 
+Author: Imdadul Haque
+Date Created: 2022-06-06
+
+This file imports the data to train machine learning model find the
+customers that are likely to churn. Logistic regression and Random forest methods
 are used to train the model.
 '''
 
@@ -47,25 +50,25 @@ def perform_eda(data):
     plt.figure(figsize=(20, 10))
     plt.title('Existing customer vs churn customer')
     data['Churn'].hist()
-    plt.savefig('./images/churn_hist.png')
+    plt.savefig('./images/eda/churn_hist.png')
 
     plt.figure(figsize=(20, 10))
     data['Customer_Age'].hist()
     plt.title('Customer Age')
-    plt.savefig('./images/customer_age.png')
+    plt.savefig('./images/eda/customer_age.png')
 
     plt.figure(figsize=(20, 10))
     plt.title('Martal status')
     data.Marital_Status.value_counts('normalize').plot(kind='bar')
-    plt.savefig('./images/marital_status.png')
+    plt.savefig('./images/eda/marital_status.png')
 
     plt.figure(figsize=(20, 10))
     sns.distplot(data['Total_Trans_Ct'])
-    plt.savefig('./images/total_trans_ct.png')
+    plt.savefig('./images/eda/total_trans_ct.png')
 
     plt.figure(figsize=(20, 10))
     sns.heatmap(data.corr(), annot=False, cmap='Dark2_r', linewidths=2)
-    plt.savefig('./images/correlation_heatmap.png')
+    plt.savefig('./images/eda/correlation_heatmap.png')
 
 
 def encoder_helper(data, category_lst, response=None):
@@ -100,7 +103,7 @@ def perform_feature_engineering(data, response=None):
     '''
     input:
               df: pandas dataframe
-              response: string of response name [optional argument that could be used for 
+              response: string of response name [optional argument that could be used for
               naming variables or index y column]
 
     output:
@@ -186,7 +189,7 @@ def classification_report_image(y_train,
              'fontsize': 10}, fontproperties='monospace')  # approach improved by OP -> monospace!
     plt.axis('off')
 #     plt.show()
-    plt.savefig('./images/classification_report_rf.png', bbox_inches='tight')
+    plt.savefig('./images/results/classification_report_rf.png', bbox_inches='tight')
 
     plt.figure(figsize=(5, 5))
     plt.rc('figure', figsize=(5, 5))
@@ -199,7 +202,9 @@ def classification_report_image(y_train,
     plt.text(0.01, 0.7, str(classification_report(y_test, y_test_preds_lr)), {
              'fontsize': 10}, fontproperties='monospace')  # approach improved by OP -> monospace!
     plt.axis('off')
-    plt.savefig('./images/classification_report_lr.png', bbox_inches='tight')
+    plt.savefig(
+        './images/results/classification_report_lr.png',
+        bbox_inches='tight')
 
 
 def feature_importance_plot(model, X_data, output_pth):
@@ -264,13 +269,37 @@ def train_models(X_train, X_test, y_train, y_test):
 
     plt.figure(figsize=(15, 8))
     ax = plt.gca()
-    rfc_disp = plot_roc_curve(cv_rfc.best_estimator_, X_test, y_test, ax=ax, alpha=0.8)
+    rfc_disp = plot_roc_curve(
+        cv_rfc.best_estimator_,
+        X_test,
+        y_test,
+        ax=ax,
+        alpha=0.8)
     lrc_plot = plot_roc_curve(lrc, X_test, y_test, ax=ax, alpha=0.8)
-    plt.savefig('./images/roc_curve.png')
+    plt.savefig('./images/results/roc_curve.png')
 
     # save best model
     joblib.dump(cv_rfc.best_estimator_, './models/rfc_model.pkl')
     joblib.dump(lrc, './models/logistic_model.pkl')
+
+    y_train_preds_rf = cv_rfc.best_estimator_.predict(X_train)
+    y_test_preds_rf = cv_rfc.best_estimator_.predict(X_test)
+
+    y_train_preds_lr = lrc.predict(X_train)
+    y_test_preds_lr = lrc.predict(X_test)
+
+    feature_importance_plot(
+        cv_rfc.best_estimator_,
+        X_train,
+        './images/results/feture_importance_plot_rf.png')
+
+    classification_report_image(
+        y_train,
+        y_test,
+        y_train_preds_lr,
+        y_train_preds_rf,
+        y_test_preds_lr,
+        y_test_preds_rf)
 
 
 if __name__ == '__main__':
@@ -288,24 +317,24 @@ if __name__ == '__main__':
     X_train, X_test, y_train, y_test = perform_feature_engineering(df)
     train_models(X_train, X_test, y_train, y_test)
 
-    rfc_model = joblib.load('./models/rfc_model.pkl')
-    lr_model = joblib.load('./models/logistic_model.pkl')
+#     rfc_model = joblib.load('./models/rfc_model.pkl')
+#     lr_model = joblib.load('./models/logistic_model.pkl')
 
-    y_train_preds_rf = rfc_model.predict(X_train)
-    y_test_preds_rf = rfc_model.predict(X_test)
+#     y_train_preds_rf = rfc_model.predict(X_train)
+#     y_test_preds_rf = rfc_model.predict(X_test)
 
-    y_train_preds_lr = lr_model.predict(X_train)
-    y_test_preds_lr = lr_model.predict(X_test)
+#     y_train_preds_lr = lr_model.predict(X_train)
+#     y_test_preds_lr = lr_model.predict(X_test)
 
-    classification_report_image(
-        y_train,
-        y_test,
-        y_train_preds_lr,
-        y_train_preds_rf,
-        y_test_preds_lr,
-        y_test_preds_rf)
+#     classification_report_image(
+#         y_train,
+#         y_test,
+#         y_train_preds_lr,
+#         y_train_preds_rf,
+#         y_test_preds_lr,
+#         y_test_preds_rf)
 
-    feature_importance_plot(
-        rfc_model,
-        X_train,
-        './images/feture_importance_plot_rf.png')
+#     feature_importance_plot(
+#         rfc_model,
+#         X_train,
+#         './images/results/feture_importance_plot_rf.png')

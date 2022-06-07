@@ -1,4 +1,7 @@
 '''
+Author: Imdadul Haque
+Date Created: 2022-06-06
+
 This file contains unit tests to check different functions in
 churn_library.py
 '''
@@ -58,7 +61,7 @@ def test_eda(data_f):
     '''
     cls.perform_eda(data_f)
     try:
-        assert os.path.isdir('./images/')
+        assert os.path.isdir('./images/eda')
         logging.info("Testing perform_eda: Images folder exists")
     except AssertionError as err:
         logging.error("Testing perform_eda: Images folder wasn't found")
@@ -73,7 +76,7 @@ def test_eda(data_f):
 
     for plot in plot_lst:
         try:
-            assert os.path.isfile('./images/' + plot)
+            assert os.path.isfile('./images/eda/' + plot)
         except AssertionError as err:
             logging.error("Testing perform_eda: %s was not found", plot)
             raise err
@@ -199,7 +202,7 @@ def test_train_models(perform_feature_engineering_f):
     cls.train_models(x_train, x_test, y_train, y_test)
 
     try:
-        assert os.path.isfile('./images/roc_curve.png')
+        assert os.path.isfile('./images/results/roc_curve.png')
         logging.info("Testing train_models: Roc curve exists")
     except AssertionError as err:
         logging.error(
@@ -224,7 +227,7 @@ def test_train_models(perform_feature_engineering_f):
 
 if __name__ == "__main__":
 
-    for directory in ['./images', './logs', './models']:
+    for directory in ['./images/eda', './images/results', './logs', './models']:
         files = glob.glob("%s/*" %directory)
         for f in files:
             os.remove(f)
